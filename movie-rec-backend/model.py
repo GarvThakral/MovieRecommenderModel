@@ -277,8 +277,12 @@ sorted(list(enumerate(similarity[0])),reverse = True,key = lambda x:x[1])[1:6]
 # In[48]:
 import requests
 import json
+from dotenv import load_dotenv
+load_dotenv()
+import os
+secret_key = str(os.getenv('secret_key'))
 def fetchFromApi(movie_id):
-    response = requests.get(f"https://api.themoviedb.org/3/movie/{movie_id}?api_key=9adee3b8e9c2dde7cbf8a501323a7568")
+    response = requests.get(f"https://api.themoviedb.org/3/movie/{movie_id}?api_key={secret_key}")
     data = response.json()
     return {
         "poster_path":"https://image.tmdb.org/t/p/w185/"+data["poster_path"],
