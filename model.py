@@ -13,6 +13,14 @@ import pickle
 # Download NLTK data (runs once on startup)
 nltk.download('punkt', quiet=True)
 
+# Define stem function early
+def stem(text):
+    ps = PorterStemmer()
+    y = []
+    for i in text.split():
+        y.append(ps.stem(i))
+    return " ".join(y)
+
 load_dotenv()
 secret_key = str(os.getenv('secret_key'))
 
@@ -74,13 +82,12 @@ movies['crew'] = movies['crew'].apply(lambda x: [i.replace(" ", "") for i in x])
 movies["tags"] = movies["overview"] + movies["genres"] + movies["keywords"] + movies["cast"] + movies["crew"]
 
 # Create new DataFrame with explicit copy
-new_df = movies[["movie_id", "title", "tags"]].copy()  # Use .copy() to avoid view issues
+new_df = movies[["movie_id", "title", "tags"]].copy()
 
 # Apply transformations using .loc
 new_df.loc[:, 'tags'] = new_df['tags'].apply(lambda x: " ".join(x))
 new_df.loc[:, 'tags'] = new_df['tags'].apply(lambda x: x.lower())
-ps = PorterStemmer()
-new_df.loc[:, 'tags'] = new_df['tags'].apply(stem)
+new_df.loc[:, 'tags'] = new_df['tags'].apply(stem)  # Now stem is defined
 
 # Vectorize and compute similarity
 cv = CountVectorizer(max_features=5000, stop_words='english')
